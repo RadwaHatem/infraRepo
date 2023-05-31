@@ -1,0 +1,6 @@
+.terraform*
+terraform.*
+private-key.tf
+dev.tfvars
+keys
+
