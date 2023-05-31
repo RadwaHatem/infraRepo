@@ -1,0 +1,53 @@
+- name: Deploy Jenkins
+  hosts: all
+  tasks:
+      - name: Create a k8s namespace
+        kubernetes.core.k8s:
+          name: jenkins
+          api_version: v1
+          kind: Namespace
+          state: present
+
+      - name: Create a jenkins pod
+        kubernetes.core.k8s:
+          state: present
+          definition:
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              name: jenkins
+              namespace: jenkins
+              labels:
+                app: jenkins
+            spec:
+              containers:
+              - name: jenkins
+                image: jenkins/jenkins:lts-jdk11
+                ports:
+                - containerPort: 8080
+
+      - name: Create a jenkins service
+        kubernetes.core.k8s:
+          state: present
+          definition:
+            apiVersion: v1
+            kind: Service
+            metadata:
+              name: jenkins-svc
+              namespace: jenkins
+              labels:
+                app: jenkins
+            spec:
+              ports:
+              - port: 80
+                targetPort: 8080
+                protocol: TCP
+              selector:
+                app: jenkins
+              type: LoadBalancer     
+
+
+
+
+
+      
